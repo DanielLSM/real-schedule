@@ -15,3 +15,10 @@ over maintenance (number of days before due date * cost per day per task)
 7) How to resolve the local conflicts should be tied to how to solve the global conflicts, the global values should be backpropagated somehow.
 8) For the inclusion of RUL i just forsee that it will change the estimated due date by enlarging it. Thus reducing costs.
 9) But how exactly to solve the conflicts? This is a very big question.
+
+CHECK HOW MANY CONFLITS THERE ARE IN A CERTAIN DATE, AND CHECK BACKWRODS THE N MORE MAINTENANCE OPPORTUNITIES, USE HEURISTICS AND COMBO THESE ONES, FUTURE VALUE IS TO MAXIMIZED NOT ONLY LOCAL VALUE, LOCAL VALUE 
+
+
+The occupancy map for the resources will be very imporant when you can have multiple tasks done with the same resource = hangar
+
+https://www.crowdai.org/topics/what-tools-did-you-use/discussion
