@@ -1,5 +1,5 @@
 import numpy
-import pandas
+import pandas as pd
 
 
 class Task:
@@ -23,11 +23,12 @@ class Task:
         self.C_previous_end = 0
 
 
-class Callendar:
+class Calendar:
 
     def __init__(self, *args, **kwargs):
         self.start_date = None
         self.end_date = None
+        # self.calendar
 
     def render(self):
         pass  #something something tkinter?

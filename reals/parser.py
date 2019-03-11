@@ -6,7 +6,11 @@ from collections import OrderedDict, defaultdict
 
 
 def excel_to_book(file_input: str):
-    book = pd.read_excel(f1_in, sheet_name=None)  # returns an ordered dict
+    try:
+        book = pd.read_excel(f1_in, sheet_name=None)  # returns an ordered dict
+    except e as Exception:
+        print(e)
+        print('Error parsing the excel file into a dict book buddy!')
     return book
 
 
