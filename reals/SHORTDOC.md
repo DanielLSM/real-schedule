@@ -15,4 +15,4 @@ Have a dict with tasks, each task has a forecasted next due date, intervals, nex
 generate conflict tree (dont mess with general schedule), each leaf node is a feasible solution (this is next point I think though). For now, for the conflicts, order the tasks by priority, move tasks one by one solving the conflicts. register backward maintenance opportunities and order them.
 
 tkinter might be nice for visualization (print all or for a certain, step
-to another)
+to another tkinter)
