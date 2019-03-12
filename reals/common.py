@@ -1,5 +1,6 @@
 import numpy
 import pandas as pd
+from collections import OrderedDict, defaultdict
 
 
 class Calendar:
@@ -7,10 +8,28 @@ class Calendar:
     def __init__(self, *args, **kwargs):
         self.start_date = None
         self.end_date = None
-        # self.calendar
+        self.calendar = OrderedDict()
+
+    def advance_to_date(self, date):
+        pass
+
+    def plan_days(self, days):
+        pass
+
+    def plan_weeks(self, weeks):
+        pass
+
+    def plan_months(self, months):
+        pass
+
+    def plan_years(self, years):
+        pass
 
     def render(self):
         pass  #something something tkinter?
+
+    def _setup_calendar(self, start):
+        pass
 
 
 class Check:
