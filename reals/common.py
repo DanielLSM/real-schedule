@@ -2,7 +2,18 @@ import numpy
 import pandas as pd
 
 
-class Task:
+class Calendar:
+
+    def __init__(self, *args, **kwargs):
+        self.start_date = None
+        self.end_date = None
+        # self.calendar
+
+    def render(self):
+        pass  #something something tkinter?
+
+
+class Check:
 
     def __init__(self, *args, **kwargs):
         self.name = 0
@@ -21,14 +32,3 @@ class Task:
 
         self.C_previous_start = 0
         self.C_previous_end = 0
-
-
-class Calendar:
-
-    def __init__(self, *args, **kwargs):
-        self.start_date = None
-        self.end_date = None
-        # self.calendar
-
-    def render(self):
-        pass  #something something tkinter?
