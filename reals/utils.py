@@ -1,13 +1,14 @@
 import pandas as pd
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from collections import OrderedDict, defaultdict
 
 from reals import f1_in, f2_out
-from reals.common import Check, Calendar
 from reals.parser import excel_to_book
+from reals.common import Calendar, Check
 
 
-def book_to_calendar(book: dict):
+def book_to_calendar_kwargs(book: dict):
     #currently only C_Checks
     #decompose book into a couple of sheets, use this sheets to restrict
     # the calendar as much as possible
@@ -29,10 +30,11 @@ def book_to_calendar(book: dict):
     start_date = pd.to_datetime(additional['Begin Day'][2017])
     calendar_kwargs['start_date'] = start_date
     calendar_kwargs['total_years'] = additional['Total Years'][2017]
+    calendar_kwargs['end_date'] = advance_date(start_date, years=6)
 
     import ipdb
     ipdb.set_trace()
-    calendar = Calendar()
+    calendar = Calendar(**calendar_kwargs)
     return calendar
 
 
@@ -53,8 +55,13 @@ def book_to_tasks(book: dict):
     pass
 
 
-def advance_date(self, date, *args):
-    return date.now() + timedelta(*args)
+def advance_date(date, *args, **kwargs):
+    assert isinstance(date, datetime)
+    return date + relativedelta(**kwargs)
+
+
+def advance_date_now(*args, **kwargs):
+    return datetime.now() + relativedelta(**kwargs)
 
 
 if __name__ == '__main__':
@@ -63,3 +70,7 @@ if __name__ == '__main__':
     # aircraft_info = book_to_aircraft_info(book)
     # for _ in aircraft_info:
     #     print(_)
+
+    date = advance_date_now(days=2)
+
+    # print(advance_date_now(days=1, weeks=1, months=1, years=1))

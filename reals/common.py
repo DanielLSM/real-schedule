@@ -6,9 +6,12 @@ from collections import OrderedDict, defaultdict
 class Calendar:
 
     def __init__(self, *args, **kwargs):
-        self.start_date = None
-        self.end_date = None
-        self.calendar = OrderedDict()
+        self.start_date = kwargs['start_date']
+        self.end_date = kwargs['end_date']
+        self.total_years = kwargs['total_years']
+        #all the not allowed days
+        self.not_allowed = kwargs['not_allowed']
+        self.calendar = self._setup_calendar()
 
     def advance_to_date(self, date):
         pass
@@ -28,8 +31,11 @@ class Calendar:
     def render(self):
         pass  #something something tkinter?
 
-    def _setup_calendar(self, start):
-        pass
+    def _setup_calendar(self):
+        calendar = OrderedDict()
+        calendar[self.start_date] = {}
+
+        return calendar
 
 
 class Check:
