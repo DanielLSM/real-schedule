@@ -3,9 +3,9 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import OrderedDict, defaultdict
 
-from reals import f1_in, f2_out
-from reals.parser import excel_to_book
-from reals.common import Calendar, Check
+# from reals import f1_in, f2_out
+from parser import excel_to_book
+from schedule_classes import Calendar, Check
 
 
 def advance_date(date, *args, **kwargs):

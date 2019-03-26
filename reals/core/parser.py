@@ -1,6 +1,6 @@
 import pandas as pd
-from reals import f1_in, f2_out
-from reals.utils import *
+from resources import f1_in, f2_out
+from utils import *
 
 from collections import OrderedDict, defaultdict
 
@@ -9,21 +9,19 @@ from collections import OrderedDict, defaultdict
 
 def excel_to_book(file_input: str):
     try:
-        book = pd.read_excel(f1_in, sheet_name=None)  # returns an ordered dict
-    except e as Exception:
+        import pdb; pdb.set_trace()
+        book = pd.read_excel(file_input, sheet_name=None)  # returns an ordered dict
+    except Exception as e:
         print(e)
         print('Error parsing the excel file into a dict book buddy!')
     return book
 
 
-def to_excel():
-    #will save something to an excel eventually
-    pass
 
 
-def book_to_calendar_kwargs(book: dict):
+def book_to_calendar_kwargs_qichen(book: dict):
     #currently only C_Checks
-    #decompose book into a couple of sheets, use this sheets to restrict
+    # decompose book into a couple of sheets, use this sheets to restrict
     # the calendar as much as possible
     # a calendar is an ordered dict of days (each key is a date), within each day there are several
     # keys, main keys are:
@@ -43,12 +41,16 @@ def book_to_calendar_kwargs(book: dict):
     start_date = pd.to_datetime(additional['Begin Day'][2017])
     calendar_kwargs['start_date'] = start_date
     calendar_kwargs['total_years'] = additional['Total Years'][2017]
-    calendar_kwargs['end_date'] = advance_date(start_date, years=6)
-
+    
     import ipdb
     ipdb.set_trace()
-    calendar = Calendar(**calendar_kwargs)
-    return calendar
+    # calendar = Calendar(**calendar_kwargs)
+
+    return calendar_kwargs
+
+def book_to_calendar_kwargs_MPO(book: dict):
+    import ipdb; ipdb.set_trace()
+
 
 
 def book_to_aircraft_info(book: dict):
@@ -67,13 +69,18 @@ def book_to_aircraft_info(book: dict):
 def book_to_tasks(book: dict):
     pass
 
+def to_excel():
+    #will save something to an excel eventually
+    pass
 
 
 if __name__ == '__main__':
     try:
         book = excel_to_book(f1_in)
         print(book)
-    except e as Exception:
-        print(e)
+    except Exception as e:
         print('you messed up')
-    print("congratulations buddy!!!")
+        raise e
+    book_to_calendar_kwargs_MPO(book)
+    # print("congratulations buddy!!!")
+    # book_to_calendar_kwargs_qichen(book)
