@@ -9,7 +9,6 @@ from collections import OrderedDict, defaultdict
 
 def excel_to_book(file_input: str):
     try:
-        import pdb; pdb.set_trace()
         book = pd.read_excel(file_input, sheet_name=None)  # returns an ordered dict
     except Exception as e:
         print(e)
@@ -48,10 +47,35 @@ def book_to_calendar_kwargs_qichen(book: dict):
 
     return calendar_kwargs
 
-def book_to_calendar_kwargs_MPO(book: dict):
-    import ipdb; ipdb.set_trace()
+def book_to_kwargs_MPO(book):
+    """ given an MPO input, compute dict where keys are aircraft ids and the rest of sheet info is
+    organized by aircraft id """
+    aircraft_info = get_aircraft_info(book)
+    calendar_restrictions = get_calendar_restrictions(book)
+    
+    return aircraft_info, calendar_restrictions
 
+def get_aircraft_info_MPO(book):
+    aircraft_info = OrderedDict()    
+    for sheet_name in book.keys():
+        if 'Aircraft ID' in book[sheet_name].keys():
+            #create ordered dict to store aircraft info
+            for a_id in range(len(book[sheet_name]['Aircraft ID'])):
+                a_id = book[sheet_name]['Aircraft ID'][_]
+                if a_id is not in aircraft_info.keys():
+                    aircraft_info[a_id] = OrderedDict()
+                if sheet_name is not in aircraft_info[a_id].keys():
+                    aircraft_info[a_id][sheet_name] = OrderedDict()
 
+            #fill the info of other columns
+            for column_idx in book[sheet_name].keys():
+                if column_idx is not 'Aircraft ID': 
+                    for _ in range(len(book[sheet_name]['Aircraft ID'])):
+                        a_id = book[sheet_name]['Aircraft ID'][_]
+                        aircraft_info[a_id][sheet_name][column_idx] = book[sheet_name][column_idx][_]
+    
+    return aircraft_info
+    
 
 def book_to_aircraft_info(book: dict):
     #for now we only have a master key of C-Checks
@@ -81,6 +105,6 @@ if __name__ == '__main__':
     except Exception as e:
         print('you messed up')
         raise e
-    book_to_calendar_kwargs_MPO(book)
+    book_to_kwargs_MPO(book)
     # print("congratulations buddy!!!")
     # book_to_calendar_kwargs_qichen(book)
