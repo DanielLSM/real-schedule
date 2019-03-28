@@ -1,4 +1,5 @@
 import pandas as pd
+import random
 from resources import f1_in, f2_out
 from utils import *
 
@@ -14,8 +15,6 @@ def excel_to_book(file_input: str):
         print(e)
         print('Error parsing the excel file into a dict book buddy!')
     return book
-
-
 
 
 def book_to_calendar_kwargs_qichen(book: dict):
@@ -51,12 +50,22 @@ def book_to_kwargs_MPO(book):
     """ given an MPO input, compute dict where keys are aircraft ids and the rest of sheet info is
     organized by aircraft id """
     aircraft_info = get_aircraft_info_MPO(book)
-    calendar_restrictions = get_calendar_restrictions_MPO(book)
-    
+    calendar_restrictions = get_restrictions_MPO(book)
+
+
     return aircraft_info, calendar_restrictions
 
-def get_calendar_restrictions_MPO(book):
-    pass
+def get_restrictions_MPO(book):
+
+    print('INFO: gathering restrictions info')
+    restrictions_info = OrderedDict()
+    for sheet_name in book.keys():
+        if 'Aircraft ID' not in book[sheet_name].keys():
+            for column_idx in book[sheet_name].keys():
+                restrictions_info[sheet_name] = book[sheet_name].to_dict()
+
+    print('INFO: restrictions info completed')
+    return restrictions_info
 
 def get_aircraft_info_MPO(book):
     print('INFO: gathering aircraft info')
@@ -83,19 +92,6 @@ def get_aircraft_info_MPO(book):
     return aircraft_info
     
 
-def book_to_aircraft_info(book: dict):
-    #for now we only have a master key of C-Checks
-    c_inital = book['C_Initial']
-    aircraft_info = OrderedDict()
-    for _ in range(len(c_inital)):
-        aircraft_id = c_inital['Aircraft ID'][_]
-        aircraft_info[aircraft_id] = {}
-        for key in c_inital.keys():
-            if key is not 'Aitcraft_ID':
-                aircraft_info[aircraft_id][key] = c_inital[key][_]
-    return aircraft_info
-
-
 def book_to_tasks(book: dict):
     pass
 
@@ -110,7 +106,17 @@ if __name__ == '__main__':
     except Exception as e:
         print('you messed up')
         raise e
-    aircraft_info = get_aircraft_info_MPO(book)
+
+    kwargs = book_to_kwargs_MPO(book)
+
+
+
+
+
+
+
+
+
     # book_to_kwargs_MPO(book)
     # print("congratulations buddy!!!")
     # book_to_calendar_kwargs_qichen(book)
