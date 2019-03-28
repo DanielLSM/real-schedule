@@ -19,6 +19,18 @@ def dates_between(date_start,date_end):
     delta = date_end - date_start
     return date.days
 
+def dict_to_list(pandas_dict):
+    pandas_list = []
+    for value in pandas_dict.values():
+        pandas_list.append(value)
+    assert len(pandas_list)==len(list(pandas_dict.keys()))
+    return pandas_list
+
+def diff_time_list(sheet):
+    sheet_keys =  list(sheet.keys())
+    assert 'Begin' in sheet_keys and 'End' in sheet_keys, "begin or end undefined"
+    return sheet
+
 if __name__ == '__main__':
     # book = excel_to_book(f1_in)
     # book_to_calendar(book)

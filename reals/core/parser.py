@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 from resources import f1_in, f2_out
-from utils import advance_date, advance_date_now
+from utils import advance_date, advance_date_now, dict_to_list, diff_time_list
 
 from collections import OrderedDict, defaultdict
 
@@ -23,19 +23,40 @@ def book_to_kwargs_MPO(book):
     aircraft_info = get_aircraft_info_MPO(book)
     calendar_restrictions = get_restrictions_MPO(book)
 
-    import ipdb;
-    ipdb.set_trace();
 
-    calendar_time_restriction_type = 'day'
     # each type of maintenance as several restrictions we will devide in 2
     # time and hangar restrictions
+    m_type_restriction = {}
     m_type_restriction = {'time_type':'day'}
-    m_type_restriction['a-type']= {'time':[], 'resources':{extra_slots':{}}
-    m_type_restriction['c-type']= {'time':[], 'resources':{extra_slots':{}}
-    m_type_restriction['all']= {'time':[]}
+    
+    a_time = dict_to_list(calendar_restrictions['A_Not_Allowed']['Dates'])
+    c_time = diff_time_list(calendar_restrictions['C_Not_Allowed'])
+    all_time = dict_to_list(calendar_restrictions['Public_Holidays']['Dates'])
+
+
+
+    # a_resources = {'resources':{'extra_slots':{}}
+    # c_resources = {'resources':{'extra_slots':{}}
+
+
+
+
+
+
+
+
+    # m_type_restriction['a-type']= {'time':a_time, 'resources':a_resources}
+    # m_type_restriction['c-type']= {'time':c_time, 'resources':c_resources}
+    # m_type_restriction['all']= {'time': all_time}
+
+    
 
     # all these restrictions will restrict the general calendar
-    
+    # for 
+
+
+    import ipdb;
+    ipdb.set_trace();
     print("INFO: information from xlsx parsed with success")
     return {'aircraft_info': aircraft_info, 'restrictions': m_type_restriction}
 
