@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 from resources import f1_in, f2_out
-from utils import *
+from utils import advance_date, advance_date_now
 
 from collections import OrderedDict, defaultdict
 
@@ -16,44 +16,35 @@ def excel_to_book(file_input: str):
         print('Error parsing the excel file into a dict book buddy!')
     return book
 
-
-def book_to_calendar_kwargs_qichen(book: dict):
-    #currently only C_Checks
-    # decompose book into a couple of sheets, use this sheets to restrict
-    # the calendar as much as possible
-    # a calendar is an ordered dict of days (each key is a date), within each day there are several
-    # keys, main keys are:
-    # 1)
-    # 2)
-    try:
-        c_not_allowed = book['C_Not_Allowed']
-        public_holidays = book['Public_Holidays']
-        c_peak = book['C_Peak']
-        additional = book['Additional']
-        additional.set_index('Begin Year', inplace=True)
-        additional = additional.T
-    except Exception as e:
-        print(e)
-        raise e
-    calendar_kwargs = {}
-    start_date = pd.to_datetime(additional['Begin Day'][2017])
-    calendar_kwargs['start_date'] = start_date
-    calendar_kwargs['total_years'] = additional['Total Years'][2017]
-    
-    import ipdb
-    ipdb.set_trace()
-    # calendar = Calendar(**calendar_kwargs)
-
-    return calendar_kwargs
-
 def book_to_kwargs_MPO(book):
+    print("INFO: building from xlsx")
     """ given an MPO input, compute dict where keys are aircraft ids and the rest of sheet info is
     organized by aircraft id """
     aircraft_info = get_aircraft_info_MPO(book)
     calendar_restrictions = get_restrictions_MPO(book)
 
+    import ipdb;
+    ipdb.set_trace();
 
-    return aircraft_info, calendar_restrictions
+    calendar_time_restriction_type = 'day'
+    # each type of maintenance as several restrictions we will devide in 2
+    # time and hangar restrictions
+    m_type_restriction = {'time_type':'day'}
+    m_type_restriction['a-type']= {'time':[], 'resources':{extra_slots':{}}
+    m_type_restriction['c-type']= {'time':[], 'resources':{extra_slots':{}}
+    m_type_restriction['all']= {'time':[]}
+
+    # all these restrictions will restrict the general calendar
+    
+    print("INFO: information from xlsx parsed with success")
+    return {'aircraft_info': aircraft_info, 'restrictions': m_type_restriction}
+
+    # calendar_kwargs = {}
+    # start_date = pd.to_datetime(additional['Begin Day'][2017])
+    # calendar_kwargs['start_date'] = start_date
+    # calendar_kwargs['total_years'] = additional['Total Years'][2017]
+
+    # calendar = Calendar(**calendar_kwargs)
 
 def get_restrictions_MPO(book):
 
