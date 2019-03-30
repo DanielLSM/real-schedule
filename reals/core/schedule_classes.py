@@ -2,7 +2,7 @@ import numpy
 import pandas as pd
 from collections import OrderedDict, defaultdict
 # from parser import book_to_kwargs_MPO
-
+from reals.core.parser import book_to_kwargs_MPO
 
 class Calendar:
 
@@ -39,7 +39,7 @@ class Calendar:
         return calendar
 
 
-class Check:
+class Fleet:
 
     def __init__(self, *args, **kwargs):
         self.name = 0
