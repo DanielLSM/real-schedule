@@ -37,7 +37,18 @@ def diff_time_list(sheet,type='days'):
     return time_list
 
 def get_slots(sheet):
-    pass
+    assert 'Slots' in sheet.keys(), "slots are not in sheet keys"
+    if 'Date' in sheet.keys():
+        slots = {sheet['Date'][_]:sheet['Slots'][_] for _ in range(list(sheet['Slots'].keys())[-1]+1)}
+        assert len(list(slots.keys()))==len(list(sheet['Slots'].keys()))
+    elif 'Begin' in sheet.keys():
+        slots = {}
+        for _ in sheet['Begin'].keys():
+            delta = sheet['End'][_] - sheet['Begin'][_]
+            slots_per_entry = {sheet['Begin'][_]+timedelta(days=i):sheet['Slots'][_] for i in range(delta.days+1)}
+            slots.update(slots_per_entry)
+    return slots
+
 
 if __name__ == '__main__':
     # book = excel_to_book(f1_in)

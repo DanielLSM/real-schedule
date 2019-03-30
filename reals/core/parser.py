@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 from resources import f1_in, f2_out
-from utils import advance_date, advance_date_now, dict_to_list, diff_time_list
+from utils import advance_date, advance_date_now, dict_to_list, diff_time_list, get_slots
 
 from collections import OrderedDict, defaultdict
 
@@ -34,25 +34,18 @@ def book_to_kwargs_MPO(book):
     all_time = dict_to_list(calendar_restrictions['Public_Holidays']['Dates'])
 
 
-    a_resources = {'resources':{'extra_slots':{get_slots(calendar_restrictions['More_A_Slots'])}}
-    # c_resources = {'resources':{'extra_slots':{}}
+    a_resources = {'resources':{'extra_slots':get_slots(calendar_restrictions['More_A_Slots'])}}
+    c_resources = {'resources':{'extra_slots':get_slots(calendar_restrictions['More_C_Slots'])}}
 
 
-
-
-
-
-
-
-    # m_type_restriction['a-type']= {'time':a_time, 'resources':a_resources}
-    # m_type_restriction['c-type']= {'time':c_time, 'resources':c_resources}
-    # m_type_restriction['all']= {'time': all_time}
+    m_type_restriction['a-type']= {'time':a_time, 'resources':a_resources}
+    m_type_restriction['c-type']= {'time':c_time, 'resources':c_resources}
+    m_type_restriction['all']= {'time': all_time}
 
     
 
     # all these restrictions will restrict the general calendar
     # for 
-
 
     import ipdb;
     ipdb.set_trace();
