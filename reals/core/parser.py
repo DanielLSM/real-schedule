@@ -18,8 +18,8 @@ def excel_to_book(file_input: str):
 
 def book_to_kwargs_MPO(book):
     print("INFO: building from xlsx")
-    """ given an MPO input, compute dict where keys are aircraft ids and the rest of sheet info is
-    organized by aircraft id """
+    """ given an MPO input, compute dict where keys are aircraft ids and the rest 
+    of sheet info is organized by aircraft id """
     aircraft_info = get_aircraft_info_MPO(book)
     calendar_restrictions = get_restrictions_MPO(book)
 
@@ -34,8 +34,7 @@ def book_to_kwargs_MPO(book):
     all_time = dict_to_list(calendar_restrictions['Public_Holidays']['Dates'])
 
 
-
-    # a_resources = {'resources':{'extra_slots':{}}
+    a_resources = {'resources':{'extra_slots':{get_slots(calendar_restrictions['More_A_Slots'])}}
     # c_resources = {'resources':{'extra_slots':{}}
 
 

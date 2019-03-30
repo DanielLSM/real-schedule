@@ -17,7 +17,7 @@ def advance_date_now(*args, **kwargs):
 def dates_between(date_start,date_end):
     assert date_end > date_start, "end date before start_date"
     delta = date_end - date_start
-    return date.days
+    return delta.days
 
 def dict_to_list(pandas_dict):
     pandas_list = []
@@ -26,10 +26,18 @@ def dict_to_list(pandas_dict):
     assert len(pandas_list)==len(list(pandas_dict.keys()))
     return pandas_list
 
-def diff_time_list(sheet):
+def diff_time_list(sheet,type='days'):
+    # in the future we would like to...... use types different than days
     sheet_keys =  list(sheet.keys())
     assert 'Begin' in sheet_keys and 'End' in sheet_keys, "begin or end undefined"
-    return sheet
+    time_list = []
+    for _ in sheet['Begin'].keys():
+        delta = sheet['End'][_] - sheet['Begin'][_]
+        time_list.extend([sheet['Begin'][_]+timedelta(days=i) for i in range(delta.days+1)])
+    return time_list
+
+def get_slots(sheet):
+    pass
 
 if __name__ == '__main__':
     # book = excel_to_book(f1_in)
