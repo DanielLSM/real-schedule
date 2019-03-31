@@ -20,6 +20,7 @@ def excel_to_book(file_input: str):
 
 
 def book_to_kwargs_MPO(book):
+    print("#########################")
     print("INFO: building from xlsx")
     """ given an MPO input, compute dict where keys are aircraft ids and the rest 
     of sheet info is organized by aircraft id """
@@ -62,6 +63,8 @@ def book_to_kwargs_MPO(book):
     # # all these restrictions will restrict the general calendar
     # # for
     print("INFO: information from xlsx parsed with success")
+    print("#########################")
+
     return {
         'aircraft_info': aircraft_info,
         'restrictions': m_type_restriction,

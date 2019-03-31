@@ -63,14 +63,6 @@ def get_slots(sheet):
     return slots
 
 
-def get_calendar(start_date, end_date, type='days'):
-    n_days = dates_between(start_date, end_date, type='days')
-    calendar = OrderedDict()
-    for _ in range(n_days + 1):
-        calendar[advance_date(start_date, days=_)] = {}
-    return calendar
-
-
 if __name__ == '__main__':
     # book = excel_to_book(f1_in)
     # book_to_calendar(book)
