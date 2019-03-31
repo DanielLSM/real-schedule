@@ -9,7 +9,6 @@ def advance_date(date, *args, **kwargs):
     assert isinstance(date, datetime)
     return date + relativedelta(**kwargs)
 
-
 def advance_date_now(*args, **kwargs):
     return datetime.now() + relativedelta(**kwargs)
 

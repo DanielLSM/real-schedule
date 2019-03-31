@@ -2,6 +2,7 @@ import pandas as pd
 import random
 from reals.core.resources import f1_in, f2_out
 from reals.core.utils import dict_to_list, diff_time_list, get_slots
+from reals.core.utils import advance_date
 
 from collections import OrderedDict, defaultdict
 
@@ -50,16 +51,18 @@ def book_to_kwargs_MPO(book):
     m_type_restriction['all'] = {'time': all_time}
 
     # TODO
-    # start_date =
-    # end_date  =
+    start_date = pd.to_datetime(book['Additional'][2017][1])
+    end_date  = advance_date(start_date,years=6)
+    # assert start_date is type(datetime)
 
+    import ipdb; ipdb.set_trace()
     # all these restrictions will restrict the general calendar
     # for
     print("INFO: information from xlsx parsed with success")
-    return {'aircraft_info': aircraft_info, 'restrictions': m_type_restriction}
+    return {'aircraft_info': aircraft_info, 'restrictions': m_type_restriction, 'start_date': start_date, 'end_date':end_date}
 
     # calendar_kwargs = {}
-    # start_date = pd.to_datetime(additional['Begin Day'][2017])
+    # start_date = pd.to_datetime(book['Additional']['Begin Day'][2017])
     # calendar_kwargs['start_date'] = start_date
     # calendar_kwargs['total_years'] = additional['Total Years'][2017]
 
