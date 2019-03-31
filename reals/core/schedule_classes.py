@@ -1,71 +1,50 @@
 import numpy
 import pandas as pd
 from collections import OrderedDict, defaultdict
-# from parser import book_to_kwargs_MPO
 
 from reals.core.resources import f1_in, f2_out
 from reals.core.parser import book_to_kwargs_MPO
+from reals.core.utils import get_calendar, advance_date
 
 
 class Calendar:
     def __init__(self, *args, **kwargs):
+        self.time_type = kwargs['time_type']
         self.start_date = kwargs['start_date']
         self.end_date = kwargs['end_date']
-        self.total_years = kwargs['total_years']
-        # all the not allowed days
-        self.not_allowed = kwargs['not_allowed']
-        self.calendar = self._setup_calendar()
+        self.a_type = kwargs['a-type']
+        self.c_type = kwargs['c-type']
+        self.public_holidays = kwargs['all']
+        self.calendar = get_calendar(
+            self.start_date, self.end_date, type='days')
 
-    def advance_to_date(self, date):
+        import ipdb
+        ipdb.set_trace()
+
+    def restrict_calendar(self, restrict_list):
         pass
 
-    def plan_days(self, days):
+    def plan(self, time_window):
         pass
 
-    def plan_weeks(self, weeks):
-        pass
-
-    def plan_months(self, months):
-        pass
-
-    def plan_years(self, years):
+    def reset_calendar(self):
         pass
 
     def render(self):
         pass  # something something tkinter?
 
-    def _setup_calendar(self):
-        calendar = OrderedDict()
-        calendar[self.start_date] = {}
-
-        return calendar
-
 
 class Fleet:
     def __init__(self, *args, **kwargs):
-        self.name = 0
-
-        self.C_previous_code = None
-        self.C_max = None  # numbers of c check in  c check cycle
-        # actual variables
-        self.DY_C = 0  # callendary days since previous C check
-        self.FH_C = 0  # hours since previous C check
-        self.FC_C = 0  # hours since previous C check
-
-        # Intervals
-        self.DY_C_interval = 0
-        self.FH_C_interval = 0
-        self.FC_C_interval = 0
-
-        self.C_previous_start = 0
-        self.C_previous_end = 0
+        self.aircraft_info = kwargs
 
 
 # this should be an abc abstract class
 class FleetManagerBase:
     def __init__(self, *args, **kwargs):
+
+        self.calendar = Calendar(**kwargs['restrictions'])
         self.fleet = Fleet(**kwargs['aircraft_info'])
-        self.calendar = Calendar(**kwargs['calendar_restrictions'])
 
 
 if __name__ == '__main__':
@@ -77,3 +56,4 @@ if __name__ == '__main__':
         raise e
 
     kwargs = book_to_kwargs_MPO(book)
+    fmb = FleetManagerBase(**kwargs)

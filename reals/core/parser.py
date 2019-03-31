@@ -52,14 +52,20 @@ def book_to_kwargs_MPO(book):
 
     # TODO
     start_date = pd.to_datetime(book['Additional'][2017][1])
-    end_date  = advance_date(start_date,years=6)
-    # assert start_date is type(datetime)
+    end_date = advance_date(start_date, years=6)
+    # # assert start_date is type(datetime)
+    m_type_restriction['start_date'] = start_date
+    m_type_restriction['end_date'] = end_date
 
-    import ipdb; ipdb.set_trace()
-    # all these restrictions will restrict the general calendar
-    # for
+    # import ipdb
+    # ipdb.set_trace()
+    # # all these restrictions will restrict the general calendar
+    # # for
     print("INFO: information from xlsx parsed with success")
-    return {'aircraft_info': aircraft_info, 'restrictions': m_type_restriction, 'start_date': start_date, 'end_date':end_date}
+    return {
+        'aircraft_info': aircraft_info,
+        'restrictions': m_type_restriction,
+    }
 
     # calendar_kwargs = {}
     # start_date = pd.to_datetime(book['Additional']['Begin Day'][2017])
