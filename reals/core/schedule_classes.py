@@ -94,11 +94,69 @@ class Calendar:
 
 
 class Fleet:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, start_date, end_date, *args, **kwargs):
 
+        self.start_date = start_date
+        self.end_date = end_date
         self.aircraft_info = kwargs
-        import ipdb
-        ipdb.set_trace()
+
+    def due_dates_from_info(self, start_date, end_date):
+        due_dates = OrderedDict()
+        for aircraft in self.aircraft_info.keys():
+            due_dates[aircraft] = {
+                'a-type':
+                self.compute_due_dates_type_a(start_date, end_date, aircraft),
+                'c-type':
+                self.compute_due_dates_type_c(start_date, end_date, aircraft)
+            }
+
+        return due_dates
+
+    def compute_due_dates_type_a(self, start_date, end_date, aircraft):
+        due_dates = []
+
+        due_date = self.compute_next_due_date(aircraft, last_due_date)
+        # if due_date < end_date:
+        #     due_dates[aircraft].append(due_date)
+        # while due_date < end_date:
+        #     # elapsed = [DY,FH,FC]
+        #     # utilization = [1,FH,FC]
+        #     # max = [DY, FH, FC]
+        #     due_date = self.compute_next_due_date(due_date, aircraft)
+
+        #     if due_date < end_date:
+        #         due_dates[aircraft].append(due_date)
+        return due_dates
+
+    def compute_due_dates_type_c(self, start_date, end_date, aircraft):
+        due_dates = []
+        due_date = self.compute_next_due_date(aircraft, last_due_date)
+        # if due_date < end_date:
+        #     due_dates[aircraft].append(due_date)
+        # while due_date < end_date:
+        #     # elapsed = [DY,FH,FC]
+        #     # utilization = [1,FH,FC]
+        #     # max = [DY, FH, FC]
+        #     due_date = self.compute_next_due_date(due_date, aircraft)
+
+        #     if due_date < end_date:
+        #         due_dates[aircraft].append(due_date)
+        return due_dates
+
+    #this was made purely for computacional speed, one less if every comp
+    def compute_next_due_date(self,
+                              aircraft,
+                              last_due_date,
+                              DY_i=0,
+                              FH_i=0,
+                              FC_i=0,
+                              maxDY=0,
+                              maxFH=0,
+                              maxFC=0):
+        #  = self.aircraft_info['aircraft']
+        due_date = 0
+
+        return due_date
 
 
 # this should be an abc abstract class
@@ -106,10 +164,15 @@ class FleetManagerBase:
     def __init__(self, *args, **kwargs):
 
         self.calendar = Calendar(**kwargs['restrictions'])
-        self.fleet = Fleet(**kwargs['aircraft_info'])
+        self.fleet = Fleet(
+            start_date=self.calendar.start_date,
+            end_date=self.calendar.end_date,
+            **kwargs['aircraft_info'])
 
 
 if __name__ == '__main__':
+    import time
+    time0 = time.time()
     from reals.core.parser import excel_to_book
     try:
         book = excel_to_book(f1_in)
@@ -119,3 +182,4 @@ if __name__ == '__main__':
 
     kwargs = book_to_kwargs_MPO(book)
     fmb = FleetManagerBase(**kwargs)
+    print('INFO: TOTAL TIME ELAPSED: {}'.format(time0 - time.time()))
