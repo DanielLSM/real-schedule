@@ -17,9 +17,11 @@ def get_calendar(start_date, end_date, type='days'):
                 'a-type': True,
                 'c-type': True
             },
-            'slots': {
-                'a-type': 1,
-                'c-type': 1
+            'resources': {
+                'slots': {
+                    'a-type': 1,
+                    'c-type': 1
+                }
             }
         }
     return calendar
@@ -41,20 +43,25 @@ class Calendar:
         calendar = self.restrict_calendar(
             calendar, self.public_holidays['time'], info='public holidays')
 
-        print("INFO: adding a-type restrictions")
+        print("INFO: adding a-type calendar restrictions")
         calendar = self.restrict_calendar(
             calendar, self.a_type['time'], info='a-type')
 
-        print("INFO: adding c-type restrictions")
+        print("INFO: adding c-type calendar restrictions")
         calendar = self.restrict_calendar(
             calendar, self.c_type['time'], info='c-type')
 
         print("INFO: adding a-type resources (slots)")
+        calendar = self.add_resources(
+            calendar, self.a_type['resources'], typek='slots', info='a-type')
 
         print("INFO: adding c-type resources (slots)")
+        calendar = self.add_resources(
+            calendar, self.c_type['resources'], typek='slots', info='a-type')
 
-        self.calendar = calendar
         print("#########################")
+        self.calendar = calendar
+        print("INFO: calendar complete!")
 
     @staticmethod
     def restrict_calendar(calendar, restrict_list, info='not allowed'):
@@ -66,8 +73,15 @@ class Calendar:
                 calendar[_]['allowed'][info] = False
         return calendar
 
-    def add_slots(self, c):
-        pass
+    @staticmethod
+    def add_resources(calendar, restrict_dict, typek='slots', info='a-type'):
+        start_date = list(calendar.keys())[0]
+        end_date = list(calendar.keys())[-1]
+
+        for _ in restrict_dict[typek].keys():
+            if _ > start_date and _ < end_date:
+                calendar[_]['resources'][typek][info] += 1
+        return calendar
 
     def plan(self, time_window):
         pass
@@ -81,7 +95,10 @@ class Calendar:
 
 class Fleet:
     def __init__(self, *args, **kwargs):
+
         self.aircraft_info = kwargs
+        import ipdb
+        ipdb.set_trace()
 
 
 # this should be an abc abstract class

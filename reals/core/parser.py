@@ -36,16 +36,8 @@ def book_to_kwargs_MPO(book):
     c_time = diff_time_list(calendar_restrictions['C_Not_Allowed'])
     all_time = dict_to_list(calendar_restrictions['Public_Holidays']['Dates'])
 
-    a_resources = {
-        'resources': {
-            'extra_slots': get_slots(calendar_restrictions['More_A_Slots'])
-        }
-    }
-    c_resources = {
-        'resources': {
-            'extra_slots': get_slots(calendar_restrictions['More_C_Slots'])
-        }
-    }
+    a_resources = {'slots': get_slots(calendar_restrictions['More_A_Slots'])}
+    c_resources = {'slots': get_slots(calendar_restrictions['More_C_Slots'])}
 
     m_type_restriction['a-type'] = {'time': a_time, 'resources': a_resources}
     m_type_restriction['c-type'] = {'time': c_time, 'resources': c_resources}
@@ -58,8 +50,6 @@ def book_to_kwargs_MPO(book):
     m_type_restriction['start_date'] = start_date
     m_type_restriction['end_date'] = end_date
 
-    # import ipdb
-    # ipdb.set_trace()
     # # all these restrictions will restrict the general calendar
     # # for
     print("INFO: information from xlsx parsed with success")
