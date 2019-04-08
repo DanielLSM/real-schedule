@@ -103,7 +103,7 @@ class Fleet:
 
     def due_dates_from_info(self, start_date, end_date):
         due_dates = OrderedDict()
-        t0 = time.time()
+        time0 = time.time()
         for aircraft in self.aircraft_info.keys():
             due_dates[aircraft] = {
                 'a-type':

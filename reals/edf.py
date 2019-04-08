@@ -1,18 +1,21 @@
 import numpy
 
 from reals import f1_in, f2_out
-from reals.parser import excel_to_book
-from reals.utils import book_to_calendar, book_to_aircraft_info
+from reals.core.parser import excel_to_book, book_to_kwargs_MPO
+from reals.core.schedule_classes import FleetManagerBase
 
 
-class SchedulerEDF:
+class SchedulerEDF(FleetManagerBase):
     """ Currently for C-Checks only """
 
     def __init__(self, *args, **kwargs):
-        self.book = excel_to_book(f1_in)
-        self.calendar = book_to_calendar(self.book)
-        self.aircraft_info = book_to_aircraft_info(self.book)
+        FleetManagerBase.__init__(self, **kwargs)
 
 
 if __name__ == '__main__':
-    pass
+
+    book = excel_to_book(f1_in)
+    kwargs = book_to_kwargs_MPO(book)
+    scheduler = SchedulerEDF(**kwargs)
+    scheduler.fleet.due_dates_from_info(scheduler.calendar.start_date,
+                                        scheduler.calendar.end_date)
