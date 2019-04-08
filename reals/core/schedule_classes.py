@@ -114,48 +114,78 @@ class Fleet:
 
     def compute_due_dates_type_a(self, start_date, end_date, aircraft):
         due_dates = []
-
-        due_date = self.compute_next_due_date(aircraft, last_due_date)
-        # if due_date < end_date:
-        #     due_dates[aircraft].append(due_date)
-        # while due_date < end_date:
-        #     # elapsed = [DY,FH,FC]
-        #     # utilization = [1,FH,FC]
-        #     # max = [DY, FH, FC]
-        #     due_date = self.compute_next_due_date(due_date, aircraft)
-
-        #     if due_date < end_date:
-        #         due_dates[aircraft].append(due_date)
+        last_due_date = start_date
+        DY_i = self.aircraft_info[aircraft]['A_Initial']['DY-A']
+        FH_i = self.aircraft_info[aircraft]['A_Initial']['FH-A']
+        FC_i = self.aircraft_info[aircraft]['A_Initial']['FC-A']
+        maxDY = self.aircraft_info[aircraft]['A_Initial']['ACI-DY']
+        maxFH = self.aircraft_info[aircraft]['A_Initial']['ACI-FH']
+        maxFC = self.aircraft_info[aircraft]['A_Initial']['ACI-FC']
+        due_date = self.compute_next_due_date(
+            aircraft,
+            last_due_date,
+            DY_i=DY_i,
+            FH_i=FH_i,
+            FC_i=FC_i,
+            maxDY=maxDY,
+            maxFH=maxFH,
+            maxFC=maxFC)
+        if due_date <= end_date:
+            due_dates[aircraft].append(due_date)
+        while due_date <= end_date:
+            due_date = self.compute_next_due_date(
+                due_date, aircraft, maxDY=maxDY, maxFH=maxFH, maxFC=maxFC)
+            if due_date < end_date:
+                due_dates[aircraft].append(due_date)
         return due_dates
 
     def compute_due_dates_type_c(self, start_date, end_date, aircraft):
         due_dates = []
-        due_date = self.compute_next_due_date(aircraft, last_due_date)
-        # if due_date < end_date:
-        #     due_dates[aircraft].append(due_date)
-        # while due_date < end_date:
-        #     # elapsed = [DY,FH,FC]
-        #     # utilization = [1,FH,FC]
-        #     # max = [DY, FH, FC]
-        #     due_date = self.compute_next_due_date(due_date, aircraft)
-
-        #     if due_date < end_date:
-        #         due_dates[aircraft].append(due_date)
+        last_due_date = start_date
+        DY_i = self.aircraft_info[aircraft]['C_Initial']['DY-C']
+        FH_i = self.aircraft_info[aircraft]['C_Initial']['FH-C']
+        FC_i = self.aircraft_info[aircraft]['C_Initial']['FC-C']
+        maxDY = self.aircraft_info[aircraft]['C_Initial']['CCI-DY']
+        maxFH = self.aircraft_info[aircraft]['C_Initial']['CCI-FH']
+        maxFC = self.aircraft_info[aircraft]['C_Initial']['CCI-FC']
+        due_date = self.compute_next_due_date(
+            aircraft,
+            last_due_date,
+            DY_i=DY_i,
+            FH_i=FH_i,
+            FC_i=FC_i,
+            maxDY=maxDY,
+            maxFH=maxFH,
+            maxFC=maxFC)
+        if due_date <= end_date:
+            due_dates[aircraft].append(due_date)
+        while due_date <= end_date:
+            due_date = self.compute_next_due_date(
+                due_date, aircraft, maxDY=maxDY, maxFH=maxFH, maxFC=maxFC)
+            if due_date < end_date:
+                due_dates[aircraft].append(due_date)
         return due_dates
 
     #this was made purely for computacional speed, one less if every comp
     def compute_next_due_date(self,
                               aircraft,
-                              last_due_date,
+                              last_due_date=0,
                               DY_i=0,
                               FH_i=0,
                               FC_i=0,
                               maxDY=0,
                               maxFH=0,
                               maxFC=0):
-        #  = self.aircraft_info['aircraft']
-        due_date = 0
-
+        DY, FH, FC = DY_i, FH_i, FC_i
+        last_due_date = advance_date(last_due_date, DY)
+        while DY <= maxDY and FH <= maxFH and FC <= maxFC:
+            month = last_due_date.month_name()[0:3]
+            DY += 1
+            FH += self.aircraft_info[aircraft]['DFH'][month]
+            FC += self.aircraft_info[aircraft]['DFC'][month]
+        last_due_date = advance_date(last_due_date, DY)
+        import ipdb
+        ipdb.set_trace()
         return due_date
 
 
@@ -182,4 +212,6 @@ if __name__ == '__main__':
 
     kwargs = book_to_kwargs_MPO(book)
     fmb = FleetManagerBase(**kwargs)
-    print('INFO: TOTAL TIME ELAPSED: {}'.format(time0 - time.time()))
+    fmb.fleet.due_dates_from_info(fmb.calendar.start_date,
+                                  fmb.calendar.end_date)
+    print('INFO: TOTAL TIME ELAPSED: {}'.format(time.time() - time0))
