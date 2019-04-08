@@ -1,5 +1,6 @@
 import numpy
 import pandas as pd
+import time
 from collections import OrderedDict, defaultdict
 
 from reals.core.resources import f1_in, f2_out
@@ -102,6 +103,7 @@ class Fleet:
 
     def due_dates_from_info(self, start_date, end_date):
         due_dates = OrderedDict()
+        t0 = time.time()
         for aircraft in self.aircraft_info.keys():
             due_dates[aircraft] = {
                 'a-type':
@@ -109,6 +111,10 @@ class Fleet:
                 'c-type':
                 self.compute_due_dates_type_c(start_date, end_date, aircraft)
             }
+            print(
+                "INFO: due dates of aircraft {} globally forecasted ELAPSED TIME {}"
+                .format(aircraft,
+                        time.time() - time0))
 
         return due_dates
 
@@ -131,12 +137,12 @@ class Fleet:
             maxFH=maxFH,
             maxFC=maxFC)
         if due_date <= end_date:
-            due_dates[aircraft].append(due_date)
+            due_dates.append(due_date)
         while due_date <= end_date:
             due_date = self.compute_next_due_date(
-                due_date, aircraft, maxDY=maxDY, maxFH=maxFH, maxFC=maxFC)
+                aircraft, due_date, maxDY=maxDY, maxFH=maxFH, maxFC=maxFC)
             if due_date < end_date:
-                due_dates[aircraft].append(due_date)
+                due_dates.append(due_date)
         return due_dates
 
     def compute_due_dates_type_c(self, start_date, end_date, aircraft):
@@ -158,12 +164,12 @@ class Fleet:
             maxFH=maxFH,
             maxFC=maxFC)
         if due_date <= end_date:
-            due_dates[aircraft].append(due_date)
+            due_dates.append(due_date)
         while due_date <= end_date:
             due_date = self.compute_next_due_date(
-                due_date, aircraft, maxDY=maxDY, maxFH=maxFH, maxFC=maxFC)
+                aircraft, due_date, maxDY=maxDY, maxFH=maxFH, maxFC=maxFC)
             if due_date < end_date:
-                due_dates[aircraft].append(due_date)
+                due_dates.append(due_date)
         return due_dates
 
     #this was made purely for computacional speed, one less if every comp
@@ -177,15 +183,17 @@ class Fleet:
                               maxFH=0,
                               maxFC=0):
         DY, FH, FC = DY_i, FH_i, FC_i
-        last_due_date = advance_date(last_due_date, DY)
+        try:
+            due_date = advance_date(last_due_date, DY)
+        except:
+            import ipdb
+            ipdb.set_trace()
         while DY <= maxDY and FH <= maxFH and FC <= maxFC:
             month = last_due_date.month_name()[0:3]
             DY += 1
             FH += self.aircraft_info[aircraft]['DFH'][month]
             FC += self.aircraft_info[aircraft]['DFC'][month]
-        last_due_date = advance_date(last_due_date, DY)
-        import ipdb
-        ipdb.set_trace()
+        due_date = advance_date(due_date, days=int(DY))
         return due_date
 
 
@@ -214,4 +222,4 @@ if __name__ == '__main__':
     fmb = FleetManagerBase(**kwargs)
     fmb.fleet.due_dates_from_info(fmb.calendar.start_date,
                                   fmb.calendar.end_date)
-    print('INFO: TOTAL TIME ELAPSED: {}'.format(time.time() - time0))
+    # print('INFO: TOTAL TIME ELAPSED: {}'.format(time.time() - time0))

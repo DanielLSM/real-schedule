@@ -7,7 +7,6 @@ from collections import OrderedDict, defaultdict
 
 
 def advance_date(date, *args, **kwargs):
-    assert isinstance(date, datetime)
     return date + relativedelta(**kwargs)
 
 
