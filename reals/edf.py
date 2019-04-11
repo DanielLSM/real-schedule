@@ -14,12 +14,22 @@ class SchedulerEDF(FleetManagerBase):
         self.due_dates = self.fleet.due_dates_from_info(
             self.start_date, self.end_date)
 
-    @static_method
-    def schedule():
+    class Conflict:
+        def __init__(self, aircraft1, aircraft2, time):
+            self.aircraft1 = aircraft1
+            self.aircraft2 = aircraft2
+            self.time = time
+
+    @staticmethod
+    def schedule_greedy():
         pass
 
-    def compute_initial_conflicts():
-        pass
+    @staticmethod
+    def compute_conflicts(due_dates):
+        conflicts = {}
+        for aircraft in due_dates.keys():
+            if
+            self.due_dates[aircraft1]
 
 
 if __name__ == '__main__':
