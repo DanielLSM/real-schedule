@@ -11,6 +11,16 @@ class SchedulerEDF(FleetManagerBase):
     def __init__(self, *args, **kwargs):
         FleetManagerBase.__init__(self, **kwargs)
 
+        self.due_dates = self.fleet.due_dates_from_info(
+            self.start_date, self.end_date)
+
+    @static_method
+    def schedule():
+        pass
+
+    def compute_initial_conflicts():
+        pass
+
 
 if __name__ == '__main__':
 

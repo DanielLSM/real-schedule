@@ -202,9 +202,11 @@ class FleetManagerBase:
     def __init__(self, *args, **kwargs):
 
         self.calendar = Calendar(**kwargs['restrictions'])
+        self.start_date = self.calendar.start_date
+        self.end_date = self.calendar.end_date
         self.fleet = Fleet(
-            start_date=self.calendar.start_date,
-            end_date=self.calendar.end_date,
+            start_date=self.start_date,
+            end_date=self.end_date,
             **kwargs['aircraft_info'])
 
 
