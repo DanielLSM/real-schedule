@@ -118,6 +118,46 @@ class Fleet:
 
         return due_dates
 
+    def compute_due_date_type_a(self, start_date, end_date, aircraft):
+        DY_i = self.aircraft_info[aircraft]['A_Initial']['DY-A']
+        FH_i = self.aircraft_info[aircraft]['A_Initial']['FH-A']
+        FC_i = self.aircraft_info[aircraft]['A_Initial']['FC-A']
+        maxDY = self.aircraft_info[aircraft]['A_Initial']['ACI-DY']
+        maxFH = self.aircraft_info[aircraft]['A_Initial']['ACI-FH']
+        maxFC = self.aircraft_info[aircraft]['A_Initial']['ACI-FC']
+        due_date = self.compute_next_due_date(
+            aircraft,
+            start_date,
+            DY_i=DY_i,
+            FH_i=FH_i,
+            FC_i=FC_i,
+            maxDY=maxDY,
+            maxFH=maxFH,
+            maxFC=maxFC)
+        if due_date >= end_date:
+            due_date = None
+        return due_date
+
+    def compute_due_date_type_c(self, start_date, end_date, aircraft):
+        DY_i = self.aircraft_info[aircraft]['C_Initial']['DY-C']
+        FH_i = self.aircraft_info[aircraft]['C_Initial']['FH-C']
+        FC_i = self.aircraft_info[aircraft]['C_Initial']['FC-C']
+        maxDY = self.aircraft_info[aircraft]['C_Initial']['CCI-DY']
+        maxFH = self.aircraft_info[aircraft]['C_Initial']['CCI-FH']
+        maxFC = self.aircraft_info[aircraft]['C_Initial']['CCI-FC']
+        due_date = self.compute_next_due_date(
+            aircraft,
+            start_date,
+            DY_i=DY_i,
+            FH_i=FH_i,
+            FC_i=FC_i,
+            maxDY=maxDY,
+            maxFH=maxFH,
+            maxFC=maxFC)
+        if due_date >= end_date:
+            due_date = None
+        return due_date
+
     def compute_due_dates_type_a(self, start_date, end_date, aircraft):
         due_dates = []
         last_due_date = start_date
