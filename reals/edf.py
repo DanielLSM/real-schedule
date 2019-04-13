@@ -12,11 +12,14 @@ class SchedulerEDF(FleetManagerBase):
     def __init__(self, *args, **kwargs):
         FleetManagerBase.__init__(self, **kwargs)
 
-        self.due_dates = self.fleet.due_dates_from_info(
-            self.start_date, self.end_date)
+        # self.due_dates = self.fleet.due_dates_from_info(
+        #     self.start_date, self.end_date)
 
         #a context is a a dictionary with all the next aircraft-due_dates
         # self.context
+
+    def compute_next_due_dates(start_due_dates, end_date):
+        pass
 
     @staticmethod
     def schedule_greedy():
