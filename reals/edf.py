@@ -42,38 +42,103 @@ class SchedulerEDF(FleetManagerBase):
             schedule_partial = self.generate_schedules(context)
             # import ipdb
             # ipdb.set_trace()
-            maxDY = self.fleet.aircraft_info[aircraft]['A_Initial'][
-                checks['A_Initial']['max-days']]
-            maxFH = self.fleet.aircraft_info[aircraft]['A_Initial'][
-                checks['A_Initial']['max-hours']]
-            maxFC = self.fleet.aircraft_info[aircraft]['A_Initial'][
-                checks['A_Initial']['max-cycles']]
-            # global_schedule[aircraft][due_dates]
-            global_schedule[aircraft]['due_dates'].append(
-                schedule_partial[aircraft]['A_Initial']['due_date'])
-            global_schedule[aircraft]['DY'].append(
-                maxDY - schedule_partial[aircraft]['A_Initial']['waste'][0])
-            global_schedule[aircraft]['FH'].append(
-                maxFH - schedule_partial[aircraft]['A_Initial']['waste'][1])
-            global_schedule[aircraft]['FC'].append(
-                maxFC - schedule_partial[aircraft]['A_Initial']['waste'][2])
-            global_schedule[aircraft]['DY LOST'].append(
-                schedule_partial[aircraft]['A_Initial']['waste'][0])
-            global_schedule[aircraft]['FH LOST'].append(
-                schedule_partial[aircraft]['A_Initial']['waste'][1])
-            global_schedule[aircraft]['FC LOST'].append(
-                schedule_partial[aircraft]['A_Initial']['waste'][2])
+            for aircraft in self.fleet.aircraft_info.keys():
+                maxDY = self.fleet.aircraft_info[aircraft]['A_Initial'][
+                    checks['A_Initial']['max-days']]
+                maxFH = self.fleet.aircraft_info[aircraft]['A_Initial'][
+                    checks['A_Initial']['max-hours']]
+                maxFC = self.fleet.aircraft_info[aircraft]['A_Initial'][
+                    checks['A_Initial']['max-cycles']]
+                # global_schedule[aircraft][due_dates]
+                global_schedule[aircraft]['due_dates'].append(
+                    schedule_partial[aircraft]['A_Initial']['due_date'])
+                global_schedule[aircraft]['DY'].append(
+                    maxDY -
+                    schedule_partial[aircraft]['A_Initial']['waste'][0])
+                global_schedule[aircraft]['FH'].append(
+                    maxFH -
+                    schedule_partial[aircraft]['A_Initial']['waste'][1])
+                global_schedule[aircraft]['FC'].append(
+                    maxFC -
+                    schedule_partial[aircraft]['A_Initial']['waste'][2])
+                global_schedule[aircraft]['DY LOST'].append(
+                    schedule_partial[aircraft]['A_Initial']['waste'][0])
+                global_schedule[aircraft]['FH LOST'].append(
+                    schedule_partial[aircraft]['A_Initial']['waste'][1])
+                global_schedule[aircraft]['FC LOST'].append(
+                    schedule_partial[aircraft]['A_Initial']['waste'][2])
             context = self.compute_next_context(schedule_partial,
                                                 self.end_date)
 
-        import ipdb
-        ipdb.set_trace()
+        # import ipdb
+        # ipdb.set_trace()
         self._save_to_xls(global_schedule)
 
     @staticmethod
     def _save_to_xls(global_schedule):
-        df = pd.DataFrame(data=dict1, index=[0])
-        df = (df.T)
+        dict1 = OrderedDict()
+        dict1['Fleet'] = []
+        dict1['A/C ID'] = []
+        dict1['START'] = []
+        dict1['END'] = []
+        dict1['DY'] = []
+        dict1['FH'] = []
+        dict1['FC'] = []
+        dict1['DY LOST'] = []
+        dict1['FH LOST'] = []
+        dict1['FC LOST'] = []
+        i = 1
+        for aircraft in global_schedule.keys():
+            for _ in range(len(global_schedule[aircraft]['due_dates'])):
+                dict1['Fleet'].append(aircraft[0:3])
+                dict1['A/C ID'].append(aircraft[3:])
+                dict1['START'].append(global_schedule[aircraft]['due_dates']
+                                      [_].date().isoformat())
+                dict1['END'].append(global_schedule[aircraft]['due_dates']
+                                    [_].date().isoformat())
+                dict1['DY'].append(global_schedule[aircraft]['DY'][_])
+                dict1['FH'].append(global_schedule[aircraft]['FH'][_])
+                dict1['FC'].append(global_schedule[aircraft]['FC'][_])
+                dict1['DY LOST'].append(
+                    global_schedule[aircraft]['DY LOST'][_])
+                dict1['FH LOST'].append(
+                    global_schedule[aircraft]['FH LOST'][_])
+                dict1['FC LOST'].append(
+                    global_schedule[aircraft]['FC LOST'][_])
+
+                # dict1['Fleet'].append(aircraft[0:3])
+                # dict1['A/C ID'].append( aircraft[3:]
+                # dict1[i]['START'] = global_schedule[aircraft]['due_dates'][
+                #     _].date().isoformat()
+                # dict1[i]['END'] = global_schedule[aircraft]['due_dates'][
+                #     _].date().isoformat()
+                # dict1[i]['DY'] = global_schedule[aircraft]['DY'][_]
+                # dict1[i]['FH'] = global_schedule[aircraft]['DY'][_]
+                # dict1[i]['FC'] = global_schedule[aircraft]['DY'][_]
+                # dict1[i]['DY LOST'] = global_schedule[aircraft]['DY LOST'][_]
+                # dict1[i]['FH LOST'] = global_schedule[aircraft]['FH LOST'][_]
+                # dict1[i]['FC LOST'] = global_schedule[aircraft]['FC LOST'][_]
+
+                # dict1[i] = {
+                #     'Fleet': aircraft[0:3],
+                #     'A/C ID': aircraft[3:],
+                #     'START': global_schedule[aircraft]['due_dates'][_],
+                #     'END': global_schedule[aircraft]['due_dates'][_],
+                #     'DY': global_schedule[aircraft]['DY'][_],
+                #     'FH': global_schedule[aircraft]['FH'][_],
+                #     'FC': global_schedule[aircraft]['FC'][_],
+                #     'DY LOST': global_schedule[aircraft]['DY LOST'][_],
+                #     'FH LOST': global_schedule[aircraft]['FH LOST'][_],
+                #     'FC LOST': global_schedule[aircraft]['FC LOST'][_],
+                # }
+                i += 1
+                print(i)
+        import ipdb
+        ipdb.set_trace()
+        df = pd.DataFrame(dict1, columns=dict1.keys())
+        ipdb.set_trace()
+        # df = (df.T)
+
         print(df)
         df.to_excel('output.xlsx')
         # root = Tree()

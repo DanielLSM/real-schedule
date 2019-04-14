@@ -107,3 +107,4 @@ venv.bak/
 *.md
 /resources
 .vscode
+*.xlsx
