@@ -158,6 +158,30 @@ class Fleet:
             due_date = None
         return due_date
 
+    #this was made purely for computacional speed, one less if every comp
+    def compute_next_due_date(self,
+                              aircraft,
+                              last_due_date=0,
+                              DY_i=0,
+                              FH_i=0,
+                              FC_i=0,
+                              maxDY=0,
+                              maxFH=0,
+                              maxFC=0):
+        DY, FH, FC = DY_i, FH_i, FC_i
+        try:
+            due_date = advance_date(last_due_date, DY)
+        except:
+            import ipdb
+            ipdb.set_trace()
+        while DY <= maxDY and FH <= maxFH and FC <= maxFC:
+            month = last_due_date.month_name()[0:3]
+            DY += 1
+            FH += self.aircraft_info[aircraft]['DFH'][month]
+            FC += self.aircraft_info[aircraft]['DFC'][month]
+        due_date = advance_date(due_date, days=int(DY))
+        return due_date
+
     def compute_due_dates_type_a(self, start_date, end_date, aircraft):
         due_dates = []
         last_due_date = start_date
@@ -211,30 +235,6 @@ class Fleet:
             if due_date < end_date:
                 due_dates.append(due_date)
         return due_dates
-
-    #this was made purely for computacional speed, one less if every comp
-    def compute_next_due_date(self,
-                              aircraft,
-                              last_due_date=0,
-                              DY_i=0,
-                              FH_i=0,
-                              FC_i=0,
-                              maxDY=0,
-                              maxFH=0,
-                              maxFC=0):
-        DY, FH, FC = DY_i, FH_i, FC_i
-        try:
-            due_date = advance_date(last_due_date, DY)
-        except:
-            import ipdb
-            ipdb.set_trace()
-        while DY <= maxDY and FH <= maxFH and FC <= maxFC:
-            month = last_due_date.month_name()[0:3]
-            DY += 1
-            FH += self.aircraft_info[aircraft]['DFH'][month]
-            FC += self.aircraft_info[aircraft]['DFC'][month]
-        due_date = advance_date(due_date, days=int(DY))
-        return due_date
 
 
 # this should be an abc abstract class
