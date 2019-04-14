@@ -69,6 +69,6 @@ if __name__ == '__main__':
     # for _ in aircraft_info:
     #     print(_)
 
-    date = advance_date_now(days=2)
+    date = advance_date_now(days=-2)
 
     # print(advance_date_now(days=1, weeks=1, months=1, years=1))
