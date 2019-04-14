@@ -90,8 +90,8 @@ class SchedulerEDF(FleetManagerBase):
         i = 1
         for aircraft in global_schedule.keys():
             for _ in range(len(global_schedule[aircraft]['due_dates'])):
-                dict1['Fleet'].append(aircraft[0:3])
-                dict1['A/C ID'].append(aircraft[3:])
+                dict1['Fleet'].append(aircraft[0:4])
+                dict1['A/C ID'].append(aircraft[5:])
                 dict1['START'].append(global_schedule[aircraft]['due_dates']
                                       [_].date().isoformat())
                 dict1['END'].append(global_schedule[aircraft]['due_dates']
@@ -133,10 +133,7 @@ class SchedulerEDF(FleetManagerBase):
                 # }
                 i += 1
                 print(i)
-        import ipdb
-        ipdb.set_trace()
         df = pd.DataFrame(dict1, columns=dict1.keys())
-        ipdb.set_trace()
         # df = (df.T)
 
         print(df)
@@ -296,6 +293,9 @@ class SchedulerEDF(FleetManagerBase):
 
 if __name__ == '__main__':
 
+    import time
+    t = time.time()
     book = excel_to_book(f1_in)
     kwargs = book_to_kwargs_MPO(book)
     scheduler = SchedulerEDF(**kwargs)
+    print("INFO: total elapsed time {} seconds".format(time.time() - t))
