@@ -26,7 +26,7 @@ class SchedulerEDF(FleetManagerBase):
     def __init__(self, *args, **kwargs):
         FleetManagerBase.__init__(self, **kwargs)
         context = self._compute_inital_context()
-        schedule_partial = self.generate_schedules(context)
+        schedule_partial = self.generate_schedules_heuristic(context)
         global_schedule = OrderedDict()
         for aircraft in schedule_partial.keys():
             global_schedule[aircraft] = {}
@@ -39,9 +39,10 @@ class SchedulerEDF(FleetManagerBase):
             global_schedule[aircraft]['FC LOST'] = []
 
         while not self.is_context_done(context):
-            schedule_partial = self.generate_schedules(context)
-            # import ipdb
-            # ipdb.set_trace()
+            schedule_partial = self.generate_schedules_heuristic(context)
+            schedule_partial = self.generate_schedules_MILP(context)
+            import pdb
+            pdb.set_trace()
             for aircraft in self.fleet.aircraft_info.keys():
                 maxDY = self.fleet.aircraft_info[aircraft]['A_Initial'][
                     checks['A_Initial']['max-days']]
@@ -49,7 +50,6 @@ class SchedulerEDF(FleetManagerBase):
                     checks['A_Initial']['max-hours']]
                 maxFC = self.fleet.aircraft_info[aircraft]['A_Initial'][
                     checks['A_Initial']['max-cycles']]
-                # global_schedule[aircraft][due_dates]
                 global_schedule[aircraft]['due_dates'].append(
                     schedule_partial[aircraft]['A_Initial']['due_date'])
                 global_schedule[aircraft]['DY'].append(
@@ -70,8 +70,6 @@ class SchedulerEDF(FleetManagerBase):
             context = self.compute_next_context(schedule_partial,
                                                 self.end_date)
 
-        # import ipdb
-        # ipdb.set_trace()
         self._save_to_xls(global_schedule)
 
     @staticmethod
@@ -105,53 +103,21 @@ class SchedulerEDF(FleetManagerBase):
                     global_schedule[aircraft]['FH LOST'][_])
                 dict1['FC LOST'].append(
                     global_schedule[aircraft]['FC LOST'][_])
-
-                # dict1['Fleet'].append(aircraft[0:3])
-                # dict1['A/C ID'].append( aircraft[3:]
-                # dict1[i]['START'] = global_schedule[aircraft]['due_dates'][
-                #     _].date().isoformat()
-                # dict1[i]['END'] = global_schedule[aircraft]['due_dates'][
-                #     _].date().isoformat()
-                # dict1[i]['DY'] = global_schedule[aircraft]['DY'][_]
-                # dict1[i]['FH'] = global_schedule[aircraft]['DY'][_]
-                # dict1[i]['FC'] = global_schedule[aircraft]['DY'][_]
-                # dict1[i]['DY LOST'] = global_schedule[aircraft]['DY LOST'][_]
-                # dict1[i]['FH LOST'] = global_schedule[aircraft]['FH LOST'][_]
-                # dict1[i]['FC LOST'] = global_schedule[aircraft]['FC LOST'][_]
-
-                # dict1[i] = {
-                #     'Fleet': aircraft[0:3],
-                #     'A/C ID': aircraft[3:],
-                #     'START': global_schedule[aircraft]['due_dates'][_],
-                #     'END': global_schedule[aircraft]['due_dates'][_],
-                #     'DY': global_schedule[aircraft]['DY'][_],
-                #     'FH': global_schedule[aircraft]['FH'][_],
-                #     'FC': global_schedule[aircraft]['FC'][_],
-                #     'DY LOST': global_schedule[aircraft]['DY LOST'][_],
-                #     'FH LOST': global_schedule[aircraft]['FH LOST'][_],
-                #     'FC LOST': global_schedule[aircraft]['FC LOST'][_],
-                # }
                 i += 1
                 print(i)
         df = pd.DataFrame(dict1, columns=dict1.keys())
-        # df = (df.T)
 
         print(df)
         df.to_excel('output.xlsx')
         # root = Tree()
 
-    # def EDF_heuristic(self,context):
-    #     """ The heuristic for EDF is the shortest deadline/due-date """
-    #     return list_aircraft_priorities
     def is_context_done(self, context):
-        # import ipdb
-        # ipdb.set_trace()
         for aircraft in context.keys():
             if context[aircraft]['A_Initial']['due_date'] > self.end_date:
                 return True
         return False
 
-    def generate_schedules(self, context):
+    def generate_schedules_heuristic(self, context):
         """ generate schedules using an heuristic, in this case, will only
         generate one by considering one order, in reality, we could generate,
         up to 45!= 1.1962222e+56 XD, but we will generate a single node"""
@@ -165,13 +131,29 @@ class SchedulerEDF(FleetManagerBase):
                 schedule_partial[aircraft][check] = partial_schedule_aircraft
         return schedule_partial
 
+    def generate_schedules_MILP(self, context):
+        """ Instead of using that simple heuristic, we now use a MILP,
+        build a MILP, solve a MILP, standard stuff """
+        calendar = self.calendar.calendar
+        aircrafts = list(context.keys())
+        import ipdb
+        ipdb.set_trace()
+        schedule_partial = OrderedDict()
+
+        # variables to optimize
+
+        # constraints
+
+        #objective function, sum of
+
+        # several nodes? #TODO
+        return schedule_partial
+
     def fill_in_calendar(self,
                          calendar,
                          aircraft,
                          context_aircraft,
                          check_type='a-type'):
-
-        # import ipdb
 
         due_date = context_aircraft['due_date']
         waste = context_aircraft['waste']
@@ -200,8 +182,6 @@ class SchedulerEDF(FleetManagerBase):
                 waste[1] += self.fleet.aircraft_info[aircraft]['DFH'][month]
                 waste[2] += self.fleet.aircraft_info[aircraft]['DFC'][month]
 
-        import ipdb
-        ipdb.set_trace()
         print("ERROR: IMPOSSIBLE SCHEDULE")
         return calendar, 'IMPOSSIBLE'
 
