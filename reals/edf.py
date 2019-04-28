@@ -8,6 +8,8 @@ from reals.core.schedule_classes import FleetManagerBase
 from reals.core.utils import advance_date, dates_between
 from reals.core.tree import Tree
 
+import pulp as plp
+
 checks = {
     'A_Initial': {
         'initial-days': 'DY-A',
@@ -40,9 +42,9 @@ class SchedulerEDF(FleetManagerBase):
 
         while not self.is_context_done(context):
             schedule_partial = self.generate_schedules_heuristic(context)
-            schedule_partial = self.generate_schedules_MILP(context)
             import pdb
             pdb.set_trace()
+            schedule_partial = self.generate_schedules_MILP(context)
             for aircraft in self.fleet.aircraft_info.keys():
                 maxDY = self.fleet.aircraft_info[aircraft]['A_Initial'][
                     checks['A_Initial']['max-days']]
@@ -134,18 +136,27 @@ class SchedulerEDF(FleetManagerBase):
     def generate_schedules_MILP(self, context):
         """ Instead of using that simple heuristic, we now use a MILP,
         build a MILP, solve a MILP, standard stuff """
-        calendar = self.calendar.calendar
+        print('INFO: starting local MILP')
         aircrafts = list(context.keys())
         import ipdb
         ipdb.set_trace()
         schedule_partial = OrderedDict()
 
-        # variables to optimize
+        #variables to optimize, let us say, binary for the restrictions, aircraft and date
+        for aircraft in aircrafts:
+            last_due_date = context[aircraft]['A_Initial']['last_due_date']
+            due_date = context[aircraft]['A_Initial']['due_date']
+            while last_due_date <= due_date:
 
-        # constraints
+                last_due_date = advance_date(due_date, days=int(1))
 
-        #objective function, sum of
+        #constraints hangar and due date, hangar constraints are made with callendar
+        calendar = self.calendar.calendar
 
+        #objective function, minimize sum of days to due date
+
+        print('INFO: local MILP solved')
+        #post procesing
         # several nodes? #TODO
         return schedule_partial
 
@@ -183,6 +194,8 @@ class SchedulerEDF(FleetManagerBase):
                 waste[2] += self.fleet.aircraft_info[aircraft]['DFC'][month]
 
         print("ERROR: IMPOSSIBLE SCHEDULE")
+        import ipdb
+        ipdb.set_trace()
         return calendar, 'IMPOSSIBLE'
 
     def _compute_inital_context(self):
@@ -255,19 +268,39 @@ class SchedulerEDF(FleetManagerBase):
                               maxFH=0,
                               maxFC=0):
         DY, FH, FC = DY_i, FH_i, FC_i
-        due_date = advance_date(start_date, days=int(DY))
+        # here the bug for reference
+        # due_date = advance_date(start_date, days=int(DY))
+        due_date = start_date
         month = start_date.month_name()[0:3]
         maxDY_proxy = maxDY - 1
         maxFH_proxy = maxFH - self.fleet.aircraft_info[aircraft]['DFH'][month]
         maxFC_proxy = maxFC - self.fleet.aircraft_info[aircraft]['DFC'][month]
+
+        # maxDY_proxy = maxDY
+        # maxFH_proxy = maxFH
+        # maxFC_proxy = maxFC
+
+        if aircraft == 'A319-CS-TTM':
+            import ipdb
+            ipdb.set_trace()
         while DY <= maxDY_proxy and FH <= maxFH_proxy and FC <= maxFC_proxy:
-            month = start_date.month_name()[0:3]
+            month = due_date.month_name()[0:3]
+            # print(month)
             DY += 1
             FH += self.fleet.aircraft_info[aircraft]['DFH'][month]
             FC += self.fleet.aircraft_info[aircraft]['DFC'][month]
-        due_date = advance_date(due_date, days=int(DY))
+            self.fleet.aircraft_info[aircraft]['DFH'][month]
+            # print(due_date)
+            print(DY)
+            print(FH)
+            print(FC)
+            due_date = advance_date(due_date, days=int(1))
+
+            #TODO utilization is same every day lol
+        # due_date = advance_date(due_date, days=int(DY - DY_i))
         waste = [maxDY - DY, maxFH - FH, maxFC - FC]
-        start_date = advance_date(start_date, days=int(DY_i))
+        # bug for reference
+        # start_date = advance_date(start_date, days=int(DY_i))
         return due_date, waste, start_date
 
 
