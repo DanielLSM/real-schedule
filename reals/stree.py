@@ -6,7 +6,7 @@ from reals import f1_in, f2_out
 from reals.core.parser import excel_to_book, book_to_kwargs_MPO
 from reals.core.schedule_classes import FleetManagerBase
 from reals.core.utils import advance_date, dates_between
-from reals.core.tree import Tree
+from reals.core.tree import Tree, tree_branch
 
 import pulp as plp
 
@@ -22,7 +22,7 @@ checks = {
 }
 
 
-class SchedulerEDF(FleetManagerBase):
+class SchedulerTree(FleetManagerBase):
     """ Currently for A/C-Checks only, nodes are partial schedules and, tree as total schedules """
 
     def __init__(self, *args, **kwargs):
@@ -42,8 +42,8 @@ class SchedulerEDF(FleetManagerBase):
 
         while not self.is_context_done(context):
             schedule_partial = self.generate_schedules_heuristic(context)
-            import ipdb
-            ipdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
             schedule_partial = self.generate_schedules_MILP(context)
             for aircraft in self.fleet.aircraft_info.keys():
                 maxDY = self.fleet.aircraft_info[aircraft]['A_Initial'][
@@ -123,77 +123,8 @@ class SchedulerEDF(FleetManagerBase):
         generate one by considering one order, in reality, we could generate,
         up to 45!= 1.1962222e+56 XD, but we will generate a single node"""
         calendar = self.calendar.calendar
-        schedule_partial = OrderedDict()
-        for check in checks.keys():
-            for aircraft in context.keys():
-                schedule_partial[aircraft] = {}
-                calendar, partial_schedule_aircraft = self.fill_in_calendar(
-                    calendar, aircraft, context[aircraft]['A_Initial'])
-                schedule_partial[aircraft][check] = partial_schedule_aircraft
+        calendar, schedule_partial = tree_branch(calendar, context)
         return schedule_partial
-
-    def generate_schedules_MILP(self, context):
-        """ Instead of using that simple heuristic, we now use a MILP,
-        build a MILP, solve a MILP, standard stuff """
-        print('INFO: starting local MILP')
-        aircrafts = list(context.keys())
-        import ipdb
-        ipdb.set_trace()
-        schedule_partial = OrderedDict()
-
-        #variables to optimize, let us say, binary for the restrictions, aircraft and date
-        for aircraft in aircrafts:
-            last_due_date = context[aircraft]['A_Initial']['last_due_date']
-            due_date = context[aircraft]['A_Initial']['due_date']
-            while last_due_date <= due_date:
-
-                last_due_date = advance_date(due_date, days=int(1))
-
-        #constraints hangar and due date, hangar constraints are made with callendar
-        calendar = self.calendar.calendar
-
-        #objective function, minimize sum of days to due date
-
-        print('INFO: local MILP solved')
-        #post procesing
-        # several nodes? #TODO
-        return schedule_partial
-
-    def fill_in_calendar(self,
-                         calendar,
-                         aircraft,
-                         context_aircraft,
-                         check_type='a-type'):
-
-        due_date = context_aircraft['due_date']
-        waste = context_aircraft['waste']
-        last_due_date = context_aircraft['last_due_date']
-        while due_date >= last_due_date:
-            if calendar[due_date]['allowed']['public holidays'] and calendar[
-                    due_date]['allowed']['a-type']:
-                if calendar[due_date]['resources']['slots'][check_type] >= 0:
-                    calendar[due_date]['resources']['slots'][check_type] -= 1
-                    context_aircraft['due_date'] = due_date
-                    context_aircraft['waste'] = waste
-                    return calendar, context_aircraft
-                else:
-                    month = due_date.month_name()[0:3]
-                    due_date = advance_date(due_date, days=int(-1))
-                    waste[0] += 1
-                    waste[1] += self.fleet.aircraft_info[aircraft]['DFH'][
-                        month]
-                    waste[2] += self.fleet.aircraft_info[aircraft]['DFC'][
-                        month]
-                    # subtract here the timings
-            else:
-                month = due_date.month_name()[0:3]
-                due_date = advance_date(due_date, days=int(-1))
-                waste[0] += 1
-                waste[1] += self.fleet.aircraft_info[aircraft]['DFH'][month]
-                waste[2] += self.fleet.aircraft_info[aircraft]['DFC'][month]
-
-        print("ERROR: IMPOSSIBLE SCHEDULE")
-        return calendar, 'IMPOSSIBLE'
 
     def _compute_inital_context(self):
         due_dates = OrderedDict()
@@ -265,33 +196,21 @@ class SchedulerEDF(FleetManagerBase):
                               maxFH=0,
                               maxFC=0):
         DY, FH, FC = DY_i, FH_i, FC_i
-        # here the bug for reference
-        # due_date = advance_date(start_date, days=int(DY))
         due_date = start_date
         month = start_date.month_name()[0:3]
         maxDY_proxy = maxDY - 1
         maxFH_proxy = maxFH - self.fleet.aircraft_info[aircraft]['DFH'][month]
         maxFC_proxy = maxFC - self.fleet.aircraft_info[aircraft]['DFC'][month]
 
-        # maxDY_proxy = maxDY
-        # maxFH_proxy = maxFH
-        # maxFC_proxy = maxFC
-
         while DY <= maxDY_proxy and FH <= maxFH_proxy and FC <= maxFC_proxy:
             month = due_date.month_name()[0:3]
-            # print(month)
             DY += 1
             FH += self.fleet.aircraft_info[aircraft]['DFH'][month]
             FC += self.fleet.aircraft_info[aircraft]['DFC'][month]
             self.fleet.aircraft_info[aircraft]['DFH'][month]
-            # print(due_date)
             due_date = advance_date(due_date, days=int(1))
 
-            #TODO utilization is same every day lol
-        # due_date = advance_date(due_date, days=int(DY - DY_i))
         waste = [maxDY - DY, maxFH - FH, maxFC - FC]
-        # bug for reference
-        # start_date = advance_date(start_date, days=int(DY_i))
         return due_date, waste, start_date
 
 
@@ -301,5 +220,5 @@ if __name__ == '__main__':
     t = time.time()
     book = excel_to_book(f1_in)
     kwargs = book_to_kwargs_MPO(book)
-    scheduler = SchedulerEDF(**kwargs)
+    scheduler = SchedulerTree(**kwargs)
     print("INFO: total elapsed time {} seconds".format(time.time() - t))

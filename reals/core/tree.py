@@ -7,6 +7,13 @@
 from treelib import Node, Tree
 
 
+def tree_branch(calendar, context):
+
+    import ipdb
+    ipdb.set_trace()
+    pass
+
+
 class ScheduleNode:
     """ A singular node, has connections to a previous node and many next nodes """
 
@@ -34,5 +41,7 @@ class ScheduleTree:
 
     def __init__(self, context, total_depth=0):
         self.total_depth = total_depth
-        self.root = ScheduleNode(
-            schedule_assignment=None, context=context, name='root', depth=0)
+        self.root = ScheduleNode(schedule_assignment=None,
+                                 context=context,
+                                 name='root',
+                                 depth=0)
