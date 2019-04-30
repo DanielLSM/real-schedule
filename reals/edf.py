@@ -6,7 +6,7 @@ from reals import f1_in, f2_out
 from reals.core.parser import excel_to_book, book_to_kwargs_MPO
 from reals.core.schedule_classes import FleetManagerBase
 from reals.core.utils import advance_date, dates_between
-from reals.core.tree import Tree
+# from reals.core.tree import Tree
 
 import pulp as plp
 
@@ -132,32 +132,32 @@ class SchedulerEDF(FleetManagerBase):
                 schedule_partial[aircraft][check] = partial_schedule_aircraft
         return schedule_partial
 
-    def generate_schedules_MILP(self, context):
-        """ Instead of using that simple heuristic, we now use a MILP,
-        build a MILP, solve a MILP, standard stuff """
-        print('INFO: starting local MILP')
-        aircrafts = list(context.keys())
-        import ipdb
-        ipdb.set_trace()
-        schedule_partial = OrderedDict()
+    # def generate_schedules_MILP(self, context):
+    #     """ Instead of using that simple heuristic, we now use a MILP,
+    #     build a MILP, solve a MILP, standard stuff """
+    #     print('INFO: starting local MILP')
+    #     aircrafts = list(context.keys())
+    #     import ipdb
+    #     ipdb.set_trace()
+    #     schedule_partial = OrderedDict()
 
-        #variables to optimize, let us say, binary for the restrictions, aircraft and date
-        for aircraft in aircrafts:
-            last_due_date = context[aircraft]['A_Initial']['last_due_date']
-            due_date = context[aircraft]['A_Initial']['due_date']
-            while last_due_date <= due_date:
+    #     #variables to optimize, let us say, binary for the restrictions, aircraft and date
+    #     for aircraft in aircrafts:
+    #         last_due_date = context[aircraft]['A_Initial']['last_due_date']
+    #         due_date = context[aircraft]['A_Initial']['due_date']
+    #         while last_due_date <= due_date:
 
-                last_due_date = advance_date(due_date, days=int(1))
+    #             last_due_date = advance_date(due_date, days=int(1))
 
-        #constraints hangar and due date, hangar constraints are made with callendar
-        calendar = self.calendar.calendar
+    #     #constraints hangar and due date, hangar constraints are made with callendar
+    #     calendar = self.calendar.calendar
 
-        #objective function, minimize sum of days to due date
+    #     #objective function, minimize sum of days to due date
 
-        print('INFO: local MILP solved')
-        #post procesing
-        # several nodes? #TODO
-        return schedule_partial
+    #     print('INFO: local MILP solved')
+    #     #post procesing
+    #     # several nodes? #TODO
+    #     return schedule_partial
 
     def fill_in_calendar(self,
                          calendar,
